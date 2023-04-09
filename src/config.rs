@@ -15,7 +15,7 @@ use lightning_block_sync::http::HttpEndpoint;
 use tokio_postgres::Config;
 
 pub(crate) const SCHEMA_VERSION: i32 = 8;
-pub(crate) const SNAPSHOT_CALCULATION_INTERVAL: u32 = 3600 * 24; // every 24 hours, in seconds
+pub(crate) const SNAPSHOT_CALCULATION_INTERVAL: u32 = 300; // every 5 minutes, in seconds
 pub(crate) const DOWNLOAD_NEW_GOSSIP: bool = true;
 
 pub(crate) fn network() -> Network {
