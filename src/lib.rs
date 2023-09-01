@@ -10,7 +10,7 @@
 extern crate core;
 
 use std::collections::{HashMap, HashSet};
-use std::fs::File;
+use std::fs::{self, File};
 use std::io::BufReader;
 use std::ops::Deref;
 use std::sync::Arc;
@@ -20,9 +20,11 @@ use lightning::routing::gossip::{NetworkGraph, NodeId};
 use lightning::util::logger::Logger;
 use lightning::util::ser::{ReadableArgs, Writeable};
 use tokio::sync::mpsc;
-use tokio_postgres::{Client, NoTls};
 use crate::config::SYMLINK_GRANULARITY_INTERVAL;
+use tokio_postgres::Client;
 use crate::lookup::DeltaSet;
+use native_tls::{Certificate, TlsConnector};
+use postgres_native_tls::MakeTlsConnector;
 
 use crate::persistence::GossipPersister;
 use crate::serialization::UpdateSerialization;
@@ -119,8 +121,16 @@ impl<L: Deref + Clone + Send + Sync + 'static> RapidSyncProcessor<L> where L::Ta
 }
 
 pub(crate) async fn connect_to_db() -> Client {
+    let cert = fs::read(config::cert_path()).expect("db cert should exist");
+    let cert = Certificate::from_pem(&cert).expect("db cert should parse");
+    let connector = TlsConnector::builder()
+        .add_root_certificate(cert)
+        .build()
+        .expect("db cert should build");
+    let connector = MakeTlsConnector::new(connector);
+
 	let connection_config = config::db_connection_config();
-	let (client, connection) = connection_config.connect(NoTls).await.unwrap();
+	let (client, connection) = connection_config.connect(connector).await.unwrap();
 
 	tokio::spawn(async move {
 		if let Err(e) = connection.await {
