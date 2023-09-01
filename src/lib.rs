@@ -19,6 +19,7 @@ use lightning::log_info;
 use lightning::routing::gossip::{NetworkGraph, NodeId};
 use lightning::util::logger::Logger;
 use lightning::util::ser::{ReadableArgs, Writeable};
+use serde::{Serialize, Deserialize};
 use tokio::sync::mpsc;
 use crate::config::SYMLINK_GRANULARITY_INTERVAL;
 use tokio_postgres::Client;
@@ -40,6 +41,7 @@ mod snapshot;
 mod config;
 mod hex_utils;
 mod verifier;
+mod client;
 
 pub mod types;
 
@@ -57,6 +59,7 @@ pub struct RapidSyncProcessor<L: Deref> where L::Target: Logger {
 	logger: L
 }
 
+#[derive(Serialize, Deserialize)]
 pub struct SerializedResponse {
 	pub data: Vec<u8>,
 	pub message_count: u32,

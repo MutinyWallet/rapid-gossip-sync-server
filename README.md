@@ -21,6 +21,8 @@ can be made by setting environment variables, whose usage is as follows:
 | RAPID_GOSSIP_SYNC_SERVER_DB_NAME           | ln_graph_sync       | Name of the database to be used for gossip storage                                                         |
 | RAPID_GOSSIP_SYNC_SERVER_NETWORK           | mainnet             | Network to operate in. Possible values are mainnet, testnet, signet, regtest                               |
 | RAPID_GOSSIP_SYNC_SERVER_SNAPSHOT_INTERVAL | 10800               | The interval in seconds between snapshots                                                                  |
+| RAPID_GOSSIP_SYNC_UPLOAD_API_KEY           | _None_              | API for uploading gossip to an authenticated server                                                        |
+| RAPID_GOSSIP_SYNC_UPLOAD_URL               | _None_              | URL for uploading gossip to an authenticated server                                                        |
 | DB_CERT                                    | db.crt              | Cert of the Postgres database                                                                              |
 | BITCOIN_REST_DOMAIN                        | 127.0.0.1           | Domain of the [bitcoind REST server](https://github.com/bitcoin/bitcoin/blob/master/doc/REST-interface.md) |
 | BITCOIN_REST_PORT                          | 8332                | HTTP port of the bitcoind REST server                                                                      |

@@ -77,6 +77,14 @@ pub(crate) fn cert_path() -> String {
 	path
 }
 
+pub(crate) fn upload_api_key() -> Option<String> {
+	env::var("RAPID_GOSSIP_SYNC_UPLOAD_API_KEY").ok()
+}
+
+pub(crate) fn upload_url() -> String {
+	env::var("RAPID_GOSSIP_SYNC_UPLOAD_URL").expect("needs url if going to upload")
+}
+
 pub(crate) fn db_connection_config() -> Config {
 	let mut config = Config::new();
 	let env_name_prefix = if cfg!(test) {

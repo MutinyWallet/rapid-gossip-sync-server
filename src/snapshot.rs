@@ -4,7 +4,7 @@ use std::ops::Deref;
 use std::os::unix::fs::symlink;
 use std::sync::Arc;
 use std::time::{Duration, SystemTime, UNIX_EPOCH};
-use lightning::log_info;
+use lightning::{log_info, log_error};
 
 use lightning::routing::gossip::NetworkGraph;
 use lightning::util::logger::Logger;
@@ -119,8 +119,24 @@ impl<L: Deref + Clone> Snapshotter<L> where L::Target: Logger {
 				let snapshot_filename = format!("snapshot__calculated-at:{}__range:{}-scope__previous-sync:{}.lngossip", reference_timestamp, current_scope, current_last_sync_timestamp);
 				let snapshot_path = format!("{}/{}", pending_snapshot_directory, snapshot_filename);
 				log_info!(self.logger, "Persisting {}-second snapshot: {} ({} messages, {} announcements, {} updates ({} full, {} incremental))", current_scope, snapshot_filename, snapshot.message_count, snapshot.announcement_count, snapshot.update_count, snapshot.update_count_full, snapshot.update_count_incremental);
-				fs::write(&snapshot_path, snapshot.data).unwrap();
+				fs::write(&snapshot_path, snapshot.data.clone()).unwrap();
 				snapshot_filenames_by_scope.insert(current_scope.clone(), snapshot_filename);
+
+                    // after snapshot, upload results to a server
+                    // only doing this for 0 for now
+                    if let Some(api_key) = config::upload_api_key() {
+                        if *current_scope == u64::MAX {
+                            let client = crate::client::Client::new();
+                            match client.post_snapshot(snapshot, 0, api_key) {
+                                Ok(_) => {
+					                log_info!(self.logger, "posted snapshot: {}", 0);
+                                },
+                                Err(e) => {
+					                log_error!(self.logger, "error posted snapshot: {}", e);
+                                },
+                            }
+                        }
+                    }
 			}
 		}
 
