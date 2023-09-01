@@ -57,12 +57,19 @@ pub(crate) fn cache_path() -> String {
 	path
 }
 
+pub(crate) fn cert_path() -> String {
+	let path = env::var("DB_CERT").unwrap_or("db.crt".to_string()).to_lowercase();
+	path
+}
+
 pub(crate) fn db_connection_config() -> Config {
 	let mut config = Config::new();
 	let host = env::var("RAPID_GOSSIP_SYNC_SERVER_DB_HOST").unwrap_or("localhost".to_string());
+	let port = env::var("RAPID_GOSSIP_SYNC_SERVER_DB_PORT").unwrap_or(5432.to_string()).parse().expect("port should be number");
 	let user = env::var("RAPID_GOSSIP_SYNC_SERVER_DB_USER").unwrap_or("alice".to_string());
 	let db = env::var("RAPID_GOSSIP_SYNC_SERVER_DB_NAME").unwrap_or("ln_graph_sync".to_string());
 	config.host(&host);
+	config.port(port);
 	config.user(&user);
 	config.dbname(&db);
 	if let Ok(password) = env::var("RAPID_GOSSIP_SYNC_SERVER_DB_PASSWORD") {

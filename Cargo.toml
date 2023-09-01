@@ -10,6 +10,8 @@ lightning-block-sync = { version = "0.0.116", features=["rest-client"] }
 lightning-net-tokio = { version = "0.0.116" }
 tokio = { version = "1.25", features = ["full"] }
 tokio-postgres = { version="=0.7.5" }
+postgres-native-tls = "0.5.0"
+native-tls = "0.2.11"
 futures = "0.3"
 
 [profile.dev]
